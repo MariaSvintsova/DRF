@@ -1,0 +1,20 @@
+[
+  {
+    "model": "materials.course",
+    "pk": 1,
+    "fields": {
+      "title": "Course 1",
+      "photo": "items/photo1.jpg",
+      "description": "Description for Course 1"
+    }
+  },
+  {
+    "model": "materials.course",
+    "pk": 2,
+    "fields": {
+      "title": "Course 2",
+      "photo": "items/photo2.jpg",
+      "description": "Description for Course 2"
+    }
+  }
+]

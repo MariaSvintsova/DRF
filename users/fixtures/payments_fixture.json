@@ -1,0 +1,13 @@
+[
+  {
+    "model": "users.payment",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "payment_date": "2024-04-20",
+      "course": 1,
+      "amount": 50.00,
+      "payment_method": "cash"
+    }
+  }
+]

@@ -1,0 +1,24 @@
+[
+  {
+    "model": "materials.lesson",
+    "pk": 1,
+    "fields": {
+      "title": "Lesson 1",
+      "photo": "items/photo_lesson1.jpg",
+      "description": "Description for Lesson 1",
+      "video_link": "https://www.example.com/lesson1",
+      "course": 1
+    }
+  },
+  {
+    "model": "materials.lesson",
+    "pk": 2,
+    "fields": {
+      "title": "Lesson 2",
+      "photo": "items/photo_lesson2.jpg",
+      "description": "Description for Lesson 2",
+      "video_link": "https://www.example.com/lesson2",
+      "course": 1
+    }
+  }
+]

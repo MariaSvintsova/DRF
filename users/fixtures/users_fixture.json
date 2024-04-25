@@ -1,0 +1,22 @@
+[
+  {
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+      "email": "user1@example.com",
+      "phone_number": "123456789",
+      "city": "Moscow",
+      "avatar": "avatars/avatar1.jpg"
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 2,
+    "fields": {
+      "email": "user2@example.com",
+      "phone_number": "987654321",
+      "city": "Saint Petersburg",
+      "avatar": "avatars/avatar2.jpg"
+    }
+  }
+]
