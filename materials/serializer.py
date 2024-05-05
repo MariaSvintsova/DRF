@@ -1,26 +1,38 @@
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 
+from materials.validators import TitleValodator, YouTubeLinkValidator
 from materials.models import Course, Lesson
-from users.models import User, Payment
+from users.models import User, Payment, Subscription
 
 
 class LessonSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Lesson
         fields = '__all__'
+        validators = [
+            TitleValodator(field='title'),
+            serializers.UniqueTogetherValidator(fields=['title', 'description'], queryset=Lesson.objects.all()),
+            YouTubeLinkValidator(field='video_link')
+        ]
 
 
 class CourseSerializer(serializers.ModelSerializer):
     lessons = LessonSerializer(many=True, read_only=True)
-    total_lessons = serializers.SerializerMethodField()
+    total_lessons = serializers.SerializerMethodField(read_only=True)
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
         fields = '__all__'
 
-    def get_lessons_count(self, obj):
-        return obj.lesson_set.count()
+    def get_total_lessons(self, obj):
+        return obj.lessons.count()
+
+    def get_is_subscribed(self, object):
+        user = self.context['request'].user
+        return Subscription.objects.filter(user=user, course=object).exists()
 
 class PaymentSerializer(serializers.ModelSerializer):
     course = SlugRelatedField(slug_field='title', queryset=Course.objects.all())
@@ -46,5 +58,3 @@ class PaymentCreateSerializers(serializers.ModelSerializer):
         for m in payment_item:
             Payment.objects.crete(**m, payment=payment_item)
         return payment_item
-
-
