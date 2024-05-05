@@ -19,6 +19,6 @@ class YouTubeLinkValidator:
         self.field = field
     def __call__(self, value):
         youtube_pattern = re.compile(r'^https?://(?:www\.)?(youtube\.com/watch\?v=|youtu\.be/)[\w-]+')
-        if not youtube_pattern.match(value):
+        if not youtube_pattern.match(value['video_link']):
             raise ValidationError("Вы используете ссылку на сторонние образовательные платформы, a можно только с YouTube.com")
 
