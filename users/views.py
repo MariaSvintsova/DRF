@@ -34,7 +34,7 @@ class SubscriptionAPIView(APIView):
         sub_item = Subscription.objects.filter(user=user, course=course)
 
         # Если подписка у пользователя на этот курс есть - удаляем ее
-        if sub_item.exist():
+        if sub_item.exists():
             sub_item.delete()
             message = 'подписка удалена'
         # Если подписки у пользователя на этот курс нет - создаем ее
