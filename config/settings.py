@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 from datetime import timedelta
 from pathlib import Path
+
+from celery.schedules import crontab
 from dotenv import load_dotenv
 import os
 
@@ -43,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'drf_yasg',
     'corsheaders',
-
+    'django_celery_beat',
     'django_filters',
     'rest_framework',
     'rest_framework_simplejwt',
@@ -167,3 +169,33 @@ AUTH_USER_MODEL = 'users.User'
 
 CUR_API_URL = 'https://api.currencyapi.com/'
 CUR_API_KEY = 'cur_live_lwoMco3pQM3daqyI4W4NIDy23HviMq5ksu60abuo'
+
+
+# Настройки для Celery
+
+# URL-адрес брокера сообщений
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+# URL-адрес брокера результатов, также Redis
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
+# Часовой пояс для работы Celery
+CELERY_TIMEZONE = 'Europe/Moscow'
+# Флаг отслеживания выполнения задач
+CELERY_TASK_TRACK_STARTED = True
+# Максимальное время на выполнение задачи
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_BEAT_SCHEDULE = {
+    'check_inactive_users': {
+        'task': 'materials.tasks.check_inactive_users',
+        'schedule': crontab(minute=0, hour=0),
+    },
+}
+
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+
+SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

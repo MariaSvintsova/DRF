@@ -14,6 +14,7 @@ from materials.serializer import CourseSerializer, LessonSerializer, PaymentSeri
 from users.models import Payment, Subscription
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
+from materials.tasks import send_course_update_email
 
 @method_decorator(name='list', decorator=swagger_auto_schema(
     operation_description="description from swagger_auto_schema via method_decorator"
@@ -36,6 +37,12 @@ class CourseDetailView(generics.RetrieveAPIView):
     def get_object(self):
         pk = self.kwargs.get('pk')
         return get_object_or_404(self.queryset, pk=pk)
+
+    def update_course(request, course_id):
+        course = Course.objects.get(pk=course_id)
+        subscribers = course.subscribers.all()
+        for subscriber in subscribers:
+            send_course_update_email.delay(subscriber.email)
 
 
 class CourseCreateAPIView(generics.CreateAPIView):
