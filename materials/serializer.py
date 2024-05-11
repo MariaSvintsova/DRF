@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 
+from materials.serviсes import convert_currencies
 from materials.validators import TitleValodator, YouTubeLinkValidator
 from materials.models import Course, Lesson
 from users.models import User, Payment, Subscription
@@ -22,6 +23,7 @@ class CourseSerializer(serializers.ModelSerializer):
     lessons = LessonSerializer(many=True, read_only=True)
     total_lessons = serializers.SerializerMethodField(read_only=True)
     is_subscribed = serializers.SerializerMethodField()
+    usd_price = serializers.SerializerMethodField
 
     class Meta:
         model = Course
@@ -33,6 +35,9 @@ class CourseSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, object):
         user = self.context['request'].user
         return Subscription.objects.filter(user=user, course=object).exists()
+
+    def get_usd_price(self, instance):
+        return convert_currencies(instance.amount)
 
 class PaymentSerializer(serializers.ModelSerializer):
     course = SlugRelatedField(slug_field='title', queryset=Course.objects.all())

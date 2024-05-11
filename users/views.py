@@ -1,14 +1,20 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework import status
+from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import api_view, permission_classes
 
 from materials.models import Course
-from users.models import Subscription
+from materials.serializer import PaymentSerializer
+from users.models import Subscription, Payment
 from users.serializer import MyTokenObtainPairSerializer
 from rest_framework.permissions import IsAuthenticated
+
+from users.services import convert_rub_to_dollars, create_start_price, create_stripe_sessions
+
+
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
@@ -44,5 +50,19 @@ class SubscriptionAPIView(APIView):
 
         # Возвращаем ответ в API
         return Response({"message": message})
+
+
+class PaymentCreateAPIView(CreateAPIView):
+    serializer_class = PaymentSerializer
+    queryset = Payment.objects.all()
+
+    def  perform_create(self, serializer):
+        payment = serializer.save(user=self.request.user)
+        amount_in_dollars = convert_rub_to_dollars(payment.amount)
+        price = create_start_price(amount_in_dollars)
+        session_id, payment_link = create_stripe_sessions(price)
+        payment.session_id = session_id
+        payment.link = payment_link
+        payment.save()
 
 
